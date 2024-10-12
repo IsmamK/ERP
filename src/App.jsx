@@ -10,6 +10,7 @@ import Stores from  "./pages/Stores.jsx"
 import Invoices from  "./pages/Invoices.jsx"
 import Analytics from  "./pages/Analytics.jsx"
 import AccountRoles from  "./pages/AccountRoles.jsx"
+import Products from  "./pages/Products.jsx"
 
 
 
@@ -32,6 +33,16 @@ const App = () => {
          
 
         ] },
+
+        { path: 'products',
+          
+          children:[
+          { path: '', element: <Products /> },
+          
+         
+
+        ] },
+    
 
         { path: 'delivery',
           children:[

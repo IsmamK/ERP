@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom'; // Import NavLink
-import { FaTachometerAlt, FaWarehouse, FaTruck, FaStore, FaFileInvoice, FaChartPie, FaUserShield, FaTimes } from 'react-icons/fa'; // Import icons
+import { FaTachometerAlt, FaWarehouse, FaTruck, FaStore, FaFileInvoice, FaChartPie, FaUserShield, FaTimes , FaBox} from 'react-icons/fa'; // Import icons
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   return (
@@ -43,14 +43,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         </li>
         <li>
           <NavLink
-            to="/delivery" // Update this to your delivery route
+            to="/products" // Update this to your products route
             className={({ isActive }) =>
               `flex items-center rounded-lg font-bold p-2 ${isActive ? 'bg-blue-400 text-white' : 'hover:bg-blue-400 hover:text-white'}`
             }
           >
-            <FaTruck className='mr-2' /> Delivery
+            <FaBox className='mr-2' /> Products
           </NavLink>
         </li>
+
+
         <li>
           <NavLink
             to="/stores" // Update this to your stores route
@@ -59,6 +61,17 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             }
           >
             <FaStore className='mr-2' /> Stores
+          </NavLink>
+        </li>
+
+        <li>
+          <NavLink
+            to="/delivery" // Update this to your delivery route
+            className={({ isActive }) =>
+              `flex items-center rounded-lg font-bold p-2 ${isActive ? 'bg-blue-400 text-white' : 'hover:bg-blue-400 hover:text-white'}`
+            }
+          >
+            <FaTruck className='mr-2' /> Delivery
           </NavLink>
         </li>
         <li>

@@ -1,27 +1,45 @@
 import React, { useState } from 'react';
 import { FaTruck, FaUserPlus, FaMapMarkerAlt } from 'react-icons/fa';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Import marker icons directly
+import markerIconUrl from 'leaflet/dist/images/marker-icon.png';
+import markerIconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadowUrl from 'leaflet/dist/images/marker-shadow.png';
+
+// Fix marker icon issue
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIconRetinaUrl,
+  iconUrl: markerIconUrl,
+  shadowUrl: markerShadowUrl,
+});
 
 const Delivery = () => {
   const [riders, setRiders] = useState([
-    { id: 1, name: 'John Doe', status: 'Available', assignedTask: null, deliveryStatus: 'Idle' },
-    { id: 2, name: 'Jane Smith', status: 'On Delivery', assignedTask: 'Pickup from Warehouse', deliveryStatus: 'In Transit' },
+    { id: 1, name: 'John Doe', status: 'Available', assignedTask: null, deliveryStatus: 'Idle', location: [51.505, -0.09] },
+    { id: 2, name: 'Jane Smith', status: 'On Delivery', assignedTask: 'Pickup from Warehouse', deliveryStatus: 'In Transit', location: [51.515, -0.1] },
   ]);
-  
+
   const [newRider, setNewRider] = useState('');
   const [deliveryTask, setDeliveryTask] = useState('');
   const [selectedRider, setSelectedRider] = useState(null);
-  
+  const [mapVisible, setMapVisible] = useState(false);
+  const [mapLocation, setMapLocation] = useState([51.505, -0.09]); // Default location
+
   const tasks = ['Pickup from Warehouse', 'Return from Store'];
-  
+
   // Add a new rider
   const handleAddRider = () => {
     if (newRider.trim() !== '') {
-      const newRiderData = { id: Date.now(), name: newRider, status: 'Available', assignedTask: null, deliveryStatus: 'Idle' };
+      const newRiderData = { id: Date.now(), name: newRider, status: 'Available', assignedTask: null, deliveryStatus: 'Idle', location: [51.505, -0.09] };
       setRiders([...riders, newRiderData]);
       setNewRider('');
     }
   };
-  
+
   // Assign a delivery task to a rider
   const handleAssignTask = () => {
     if (selectedRider && deliveryTask) {
@@ -34,14 +52,20 @@ const Delivery = () => {
       setDeliveryTask('');
     }
   };
-  
+
   // Simulate real-time tracking of delivery status
   const updateDeliveryStatus = (riderId, status) => {
-    setRiders(riders.map(rider => 
+    setRiders(riders.map(rider =>
       rider.id === riderId ? { ...rider, deliveryStatus: status } : rider
     ));
   };
-  
+
+  // Show map popup
+  const handleTrackRider = (location) => {
+    setMapLocation(location);
+    setMapVisible(true);
+  };
+
   return (
     <div className='flex flex-col gap-10 dark:text-white dark:bg-black p-6'>
       <h1 className='text-4xl md:text-7xl lg:text-8xl flex'>
@@ -146,11 +170,11 @@ const Delivery = () => {
                   <td className='dark:text-white'>{rider.deliveryStatus}</td>
                   <td className='dark:text-white'>
                     {/* Simulate status update buttons */}
-                    {rider.status === 'On Delivery'  && (
+                    {rider.status === 'On Delivery' && (
                       <div className='flex gap-2'>
                         <button
                           className='btn btn-warning btn-sm'
-                          onClick={() => updateDeliveryStatus(rider.id, 'In Transit')}
+                          onClick={() => handleTrackRider(rider.location)}
                         >
                           Track Rider
                         </button>
@@ -160,7 +184,6 @@ const Delivery = () => {
                         >
                           Make Available
                         </button>
-                       
                       </div>
                     )}
                   </td>
@@ -170,6 +193,32 @@ const Delivery = () => {
           </table>
         </div>
       </div>
+
+      {/* Map Popup */}
+      {mapVisible && (
+        <div className='fixed inset-0 flex w-fu items-center justify-center bg-black bg-opacity-50'>
+          <div className='bg-white p-6 rounded-lg shadow-lg'>
+            <h2 className='text-2xl font-bold mb-4'>Rider Location</h2>
+            <MapContainer center={mapLocation} zoom={13} style={{ height: '400px', width: '600px' }}>
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              <Marker position={mapLocation}>
+                <Popup>
+                  Rider is here!
+                </Popup>
+              </Marker>
+            </MapContainer>
+            <button
+              onClick={() => setMapVisible(false)}
+              className='btn btn-secondary mt-4'
+            >
+              Close Map
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
